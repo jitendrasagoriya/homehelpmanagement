@@ -1,0 +1,7 @@
+1. Batch Monitored
+    a) StartTaskLet - For check batch is already executed.
+    b) Put Batch Execution Instance in INPROC mode
+    c) Batch Completion logic
+2. New Batch For delete old attendance and save in file per month basic and this batch will run every month 1st.
+3. Api for get batch info
+4. Rerun batch
