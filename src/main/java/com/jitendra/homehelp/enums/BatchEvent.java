@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum BatchEvent {
-    HOMEHELPATTENDANCE(1,"HOMEHELPATTENDANCE");
+    ATTENDANCE(1,"ATTENDANCE"),
+    CLEANUP(2,"CLEANUP"),
+    ADHOCATTENDANCE(3,"ADHOCATTENDANCE"),
+    ADHOCCLEANUP(4,"ADHOCCLEANUP");
 
     private static final Map<Integer, BatchEvent> byId = new HashMap<Integer, BatchEvent>();
     private static final Map<String, BatchEvent> byValue = new HashMap<String, BatchEvent>();

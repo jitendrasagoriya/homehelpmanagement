@@ -10,6 +10,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.util.List;
 
 @Repository
 public interface BatchMonitoredRepository extends PagingAndSortingRepository<BatchMonitored,Long> {
@@ -21,5 +22,5 @@ public interface BatchMonitoredRepository extends PagingAndSortingRepository<Bat
     Page<BatchMonitored> findByToAndFromDate(Date start, Date end, Pageable pageable);
 
     @Query("FROM BatchMonitored B WHERE B.status =:status AND B.batchEvent=:batchEvent AND B.date =:date")
-    BatchMonitored findByBatchEventAndDate(BatchEvent batchEvent, Date date, Status status);
+    List<BatchMonitored> findByBatchEventAndDate(BatchEvent batchEvent, Date date, Status status);
 }

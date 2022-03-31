@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.List;
 
 @Service
 public class BatchMonitoredServiceImpl implements BatchMonitoredService {
@@ -24,17 +25,17 @@ public class BatchMonitoredServiceImpl implements BatchMonitoredService {
     }
 
     @Override
-    public BatchMonitored getByTypeAndDate(BatchEvent batchEvent, Date date, Status status) {
+    public List<BatchMonitored> getByTypeAndDate(BatchEvent batchEvent, Date date, Status status) {
         return batchMonitoredDao.getByTypeAndDate(batchEvent,date,status);
     }
 
     @Override
-    public BatchMonitored getByTypeAndDateBySuccess(BatchEvent batchEvent, Date date) {
+    public List<BatchMonitored> getByTypeAndDateBySuccess(BatchEvent batchEvent, Date date) {
         return batchMonitoredDao.getByTypeAndDate(batchEvent,date,Status.SUCCESS);
     }
 
     @Override
-    public BatchMonitored getByTypeAndDateByFailed(BatchEvent batchEvent, Date date) {
+    public List<BatchMonitored> getByTypeAndDateByFailed(BatchEvent batchEvent, Date date) {
         return batchMonitoredDao.getByTypeAndDate(batchEvent,date,Status.FAILED);
     }
 

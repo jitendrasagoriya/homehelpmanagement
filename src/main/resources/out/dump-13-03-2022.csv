@@ -1,0 +1,10 @@
+AttendanceDto(id=1, date=2022-03-14, present=FALSE, name=Rajkumari, shiftTime=07:30:00)|
+AttendanceDto(id=2, date=2022-03-14, present=FALSE, name=Rajkumari, shiftTime=15:00:00)|
+AttendanceDto(id=3, date=2022-03-14, present=FALSE, name=Rajkumari, shiftTime=12:00:00)|
+AttendanceDto(id=4, date=2022-03-14, present=FALSE, name=Joyti, shiftTime=09:30:00)|
+AttendanceDto(id=5, date=2022-03-14, present=FALSE, name=Joyti, shiftTime=17:30:00)|
+AttendanceDto(id=6, date=2022-03-14, present=FALSE, name=Rajkumari, shiftTime=13:30:00)|
+AttendanceDto(id=7, date=2022-03-14, present=FALSE, name=Jitendra Sagoriya, shiftTime=10:00:00)|
+AttendanceDto(id=8, date=2022-03-14, present=FALSE, name=Heena, shiftTime=11:00:00)|
+AttendanceDto(id=9, date=2022-03-14, present=FALSE, name=Heena, shiftTime=09:00:00)|
+AttendanceDto(id=10, date=2022-03-14, present=FALSE, name=Heena, shiftTime=19:00:00)|

@@ -17,6 +17,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class BatchStartTasklet implements Tasklet, InitializingBean, StepExecutionListener {
 
@@ -31,14 +33,19 @@ public class BatchStartTasklet implements Tasklet, InitializingBean, StepExecuti
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
         logger.info("Batch Execution Started");
         BatchMonitored batchMonitored = new BatchMonitored.Builder().buildDefault();
-        BatchMonitored batchMonitored1 = batchMonitoredService
-                .getByTypeAndDateBySuccess(BatchEvent.HOMEHELPATTENDANCE,batchMonitored.getDate());
+        String strBatchEvent = (String) chunkContext.getStepContext().getJobParameters().get(AppConstants.JOB_NAME);
+        BatchEvent batchEvent = BatchEvent.getByValue(strBatchEvent);
         batchMonitored.setStartBy((String) chunkContext.getStepContext().getJobParameters().get(AppConstants.START_BY_KEY));
-        if (logger.isDebugEnabled())
-            logger.debug("Batch Already Executed :" +batchMonitored1!=null?Boolean.TRUE:Boolean.FALSE);
-        if (batchMonitored1!=null) {
-            initilizeBatchContext(chunkContext, batchMonitored);
-            throw new RuntimeException("Batch is already executed for " + batchMonitored.getDate() + " Date.");
+        batchMonitored.setBatchEvent(batchEvent);
+        if(batchEvent != BatchEvent.ADHOCATTENDANCE) {
+            List<BatchMonitored> batchMonitored1 = batchMonitoredService
+                    .getByTypeAndDateBySuccess(batchEvent, batchMonitored.getDate());
+            if (logger.isDebugEnabled())
+                logger.debug("Batch Already Executed :" + batchMonitored1 != null ? Boolean.TRUE : Boolean.FALSE);
+            if (batchMonitored1.size() >0) {
+                initilizeBatchContext(chunkContext, batchMonitored);
+                throw new RuntimeException("Batch is already executed for " + batchMonitored.getDate() + " Date.");
+            }
         }
         initilizeBatchContext(chunkContext, batchMonitored);
         return RepeatStatus.FINISHED;

@@ -1,9 +1,11 @@
 package com.jitendra.homehelp.entity;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.jitendra.homehelp.enums.BatchEvent;
 import com.jitendra.homehelp.enums.Status;
 import io.swagger.annotations.ApiModel;
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "batchMonitored")
 @ApiModel
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class BatchMonitored {
     @Id
     @Column(name = "id", nullable = false)
@@ -29,6 +32,7 @@ public class BatchMonitored {
     private Date date;
 
     @Column(name = "batchEvent")
+    @Enumerated(EnumType.STRING)
     private BatchEvent batchEvent;
 
     @Column(name = "batchExecutionId")
@@ -59,6 +63,8 @@ public class BatchMonitored {
     @Column(name = "reason" ,length = 2000)
     private String failedReason;
 
+    @Column(name = "runForDate")
+    private Date dateFor;
 
     public static class Builder {
         private Long id;
@@ -106,7 +112,7 @@ public class BatchMonitored {
         public BatchMonitored buildDefault() {
             BatchMonitored batchMonitored = new BatchMonitored();
             batchMonitored.setDate( new Date(System.currentTimeMillis()));
-            batchMonitored.setBatchEvent(BatchEvent.HOMEHELPATTENDANCE);
+            batchMonitored.setBatchEvent(BatchEvent.ATTENDANCE);
             batchMonitored.setStatus(Status.INPROC);
             batchMonitored.setStartTime(new Time(System.currentTimeMillis()));
             batchMonitored.setInsertedRecord(0);

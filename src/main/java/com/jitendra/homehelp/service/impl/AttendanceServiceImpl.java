@@ -1,19 +1,27 @@
 package com.jitendra.homehelp.service.impl;
 
 import com.jitendra.homehelp.dao.AttendanceDao;
+import com.jitendra.homehelp.dto.AttendanceDto;
 import com.jitendra.homehelp.entity.Attendance;
+import com.jitendra.homehelp.enums.ProgressStatus;
+import com.jitendra.homehelp.enums.Status;
 import com.jitendra.homehelp.service.AttendanceService;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Time;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
@@ -61,6 +69,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
+
     public Boolean markPresentForTodayByShift(Long id, Long shiftId) {
         Date now = new Date();
         Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
@@ -92,5 +101,84 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public Page<Attendance> getByHomeHelpId(Long id, Date start, Date end, Pageable pageable) {
         return attendanceDao.getByHomeHelpId(id,start,end,pageable);
+    }
+
+    @Override
+    public List<AttendanceDto> getByHomeIdAndDate(String homeId, java.sql.Date requestedDate) {
+        return attendanceDao.getByHomeIdAndDate(homeId,requestedDate);
+    }
+
+    @Override
+    public List<AttendanceDto> getByHomeIdAndToDate(String homeId) {
+        Date now = new Date();
+        Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
+        return getByHomeIdAndDate(homeId, new java.sql.Date(today.getTime()) );
+    }
+
+    @Override
+    public int markInTime(Long id, Date date, Long shiftId, Time inTime) {
+        return 0;
+    }
+
+    @Override
+    public int markOutTime(Long id, Date date, Long shiftId, Time outTime) {
+        return 0;
+    }
+
+    @Override
+    public int updateStatus(Long id, Date date, Long shiftId, String status) {
+        return 0;
+    }
+
+    @Override
+    @Transactional
+    public int markCompleteAttendance(Long id, Date date, Long shiftId, Boolean present, Time inTime, String status) {
+        return attendanceDao.markCompleteAttendance(id,date,shiftId,present,inTime,status);
+    }
+
+    @Override
+    @Transactional
+    public int markTodayAttendance(Long id, Long shiftId) {
+        Date now = new Date();
+        Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
+        Time time = Time.valueOf(LocalTime.now());
+        return markCompleteAttendance(id,today,shiftId,Boolean.TRUE,time, Status.INPROC.getValue());
+    }
+
+    @Override
+    @Transactional
+    public int completeShift(Long id, Date date, Long shiftId, String status, Time inTime) {
+        return attendanceDao.completeShift(id,date,shiftId, status,inTime);
+    }
+
+    @Override
+    @Transactional
+    public int completeTodayShift(Long id,  Long shiftId) {
+        Date now = new Date();
+        Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
+        Time time = Time.valueOf(LocalTime.now());
+        return completeShift(id,today,shiftId,ProgressStatus.COMPLETED.getValue(),time);
+    }
+
+    @Override
+    public List<Attendance> getByDate( Date date) {
+        return attendanceDao.getByDate(date);
+    }
+
+    @Override
+    public Map<String, Map<String,Integer>> getMonthlyPresentAttendance(Long homeHelpId, Long shiftId, Date startDate, Date endDate) {
+        return attendanceDao.getMonthlyAttendance(homeHelpId,shiftId,startDate,endDate,Boolean.TRUE);
+    }
+
+    @Override
+    public List<Pair<String, Integer>> getCurrentHelpStatusByUserId(String userId) {
+        Date now = new Date();
+        Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
+        return attendanceDao.getCurrentHelpStatusByUserId(userId,today);
+    }
+
+    @Override
+    public AttendanceDao getAttendanceDao() {
+        return attendanceDao;
     }
 }

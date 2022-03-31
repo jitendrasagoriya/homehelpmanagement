@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.List;
 
 @Service
 public class BatchMonitoredJdbcDao implements BatchMonitoredDao {
@@ -29,7 +30,7 @@ public class BatchMonitoredJdbcDao implements BatchMonitoredDao {
     }
 
     @Override
-    public BatchMonitored getByTypeAndDate(BatchEvent batchEvent, Date date, Status status) {
+    public List<BatchMonitored> getByTypeAndDate(BatchEvent batchEvent, Date date, Status status) {
         return batchMonitoredReposiotry.findByBatchEventAndDate(batchEvent,date,status);
     }
 

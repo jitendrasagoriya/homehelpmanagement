@@ -14,9 +14,11 @@ import java.time.LocalDate;
 public class HomeHelpItemPreparedStatementSetter implements ItemPreparedStatementSetter<HomeHelpDto> {
     @Override
     public void setValues(HomeHelpDto homeHelpDto, PreparedStatement preparedStatement) throws SQLException {
-        preparedStatement.setDate( 1, Date.valueOf(LocalDate.now().plusDays(1l)));
-        preparedStatement.setLong(2,homeHelpDto.getId());
-        preparedStatement.setBoolean(3,Boolean.FALSE);
-        preparedStatement.setLong(4,homeHelpDto.getShiftId());
+        int i = 1;
+        preparedStatement.setDate( i++, homeHelpDto.getDate());
+        preparedStatement.setLong( i++,homeHelpDto.getId());
+        preparedStatement.setBoolean( i++,Boolean.FALSE);
+        preparedStatement.setLong( i++,homeHelpDto.getShiftId());
+        preparedStatement.setString(i++,homeHelpDto.getStatus());
     }
 }

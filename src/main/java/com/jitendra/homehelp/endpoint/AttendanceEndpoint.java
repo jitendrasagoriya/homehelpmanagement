@@ -1,6 +1,9 @@
 package com.jitendra.homehelp.endpoint;
 
+import com.jitendra.homehelp.dto.AttendanceDto;
+import com.jitendra.homehelp.dto.DashBoardDto;
 import com.jitendra.homehelp.service.AttendanceService;
+import com.jitendra.homehelp.service.DashBoardService;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -9,8 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -26,6 +32,9 @@ public class AttendanceEndpoint {
     @Autowired
     private AttendanceService attendanceService;
 
+    @Autowired
+    private DashBoardService dashBoardService;
+
     @PostMapping(path = {"{id}/present"})
     @ApiOperation(value = "Marks To Attendance As Present",
             produces = MediaType.APPLICATION_JSON_VALUE,
@@ -40,6 +49,39 @@ public class AttendanceEndpoint {
         }
     }
 
+    @ApiOperation(value = "Get Today Attendance",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            nickname = "MarkTodayPresent",authorizations = {
+            @Authorization(HttpHeaders.AUTHORIZATION)
+    } )
+    @PostMapping(path = {"today/"})
+    public ResponseEntity<?> getTodayAttendance(@ApiIgnore @RequestAttribute(name = "userId") String userId) {
+        try {
+            return new ResponseEntity<>(attendanceService.getByHomeIdAndToDate(userId), HttpStatus.OK);
+        }catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @ApiOperation(value = "Get Today DashBoard",
+            nickname = "Get DashBoard",consumes = MediaType.TEXT_PLAIN_VALUE,authorizations = {
+            @Authorization(HttpHeaders.AUTHORIZATION)
+    } )
+    @GetMapping  (path = {"dashboard/"} )
+    public ResponseEntity<?> dashBoard(@ApiIgnore @RequestAttribute(name = "userId") String userId) {
+        try {
+            DashBoardDto dashBoardDto = new DashBoardDto();
+            List<AttendanceDto> attendanceDtos = attendanceService.getByHomeIdAndToDate(userId);
+            dashBoardDto.setAttendances(attendanceDtos);
+            Map<String,Integer> helpCurrentStatus =  dashBoardService.getHelpsCurrentStatus(attendanceDtos);
+            dashBoardDto.setMonthlyReport(dashBoardService.getMonthlyReport(attendanceDtos));
+            dashBoardDto.setHelpsCurrentStatus(dashBoardService.getCurrentStatus(userId));
+            return new ResponseEntity<>(dashBoardDto, HttpStatus.OK);
+        }catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(path = {"{id}/shift/{shift}/present"})
     @ApiOperation(value = "Marks To Attendance As Present By Id And Shift Id.",
             produces = MediaType.APPLICATION_JSON_VALUE,
@@ -48,8 +90,21 @@ public class AttendanceEndpoint {
     } )
     public ResponseEntity<?> markTodayPresentWithShift(@PathVariable(name = "id") Long id , @PathVariable(name = "shift") Long shiftId) {
         try {
-            return new ResponseEntity<>( attendanceService.markPresentForTodayByShift(id, shiftId),HttpStatus.OK);
+            return new ResponseEntity<>( attendanceService.markTodayAttendance(id, shiftId),HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+        }
+    }
 
+    @PostMapping(path = {"{id}/shift/{shift}/complete"})
+    @ApiOperation(value = "Complete Today Shift By Id And Shift Id.",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            nickname = "CompleteTodayShift",authorizations = {
+            @Authorization(HttpHeaders.AUTHORIZATION)
+    } )
+    public ResponseEntity<?> completeTodayShift(@PathVariable(name = "id") Long id , @PathVariable(name = "shift") Long shiftId) {
+        try {
+            return new ResponseEntity<>( attendanceService.completeTodayShift(id, shiftId),HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
         }

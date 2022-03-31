@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jitendra.homehelp.constants.AppConstants;
 import com.jitendra.homehelp.dao.impl.HomeHelpJdbcDao;
+import com.jitendra.homehelp.dto.PipeDeliminatorBean;
 import com.jitendra.homehelp.enums.HelpType;
 import io.swagger.annotations.ApiModel;
 import lombok.*;
@@ -23,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ApiModel
-public class HomeHelp {
+public class HomeHelp extends PipeDeliminatorBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -60,7 +61,9 @@ public class HomeHelp {
         }
     }
 
-    public String toPipeSaperatedString(){
+
+    @Override
+    public String toPipeSeparatedString() {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append(this.getId());
         stringBuffer.append(AppConstants.PIPE);
@@ -83,5 +86,4 @@ public class HomeHelp {
 
         return stringBuffer.toString();
     }
-
 }

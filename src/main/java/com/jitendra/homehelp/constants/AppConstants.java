@@ -11,4 +11,9 @@ public class AppConstants {
     public static final String NEXT_DAY_STEP = "nextDayStep";
     public static final String START_BY_KEY = "start_by";
     public static final String START_BY_VALUE_AUTORUN = "AUTORUN";
+    public static final String ATTENDANCE_JOB_NAME = "ATTENDANCE";
+    public static final String ADHOC_JOB_NAME = "ADHOCATTENDANCE";
+    public static final String CLEANUP_JOB_NAME = "CLEANUP";
+    public static final String JOB_NAME = "JOB-NAME";
+    public static final String JOB_DATE = "JOB-DATE";
 }

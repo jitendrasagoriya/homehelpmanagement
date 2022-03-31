@@ -8,17 +8,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.List;
 
 @Service
 public interface BatchMonitoredService {
 
     public BatchMonitored save(BatchMonitored batchMonitored);
 
-    public BatchMonitored getByTypeAndDate(BatchEvent batchEvent, Date date, Status status);
+    public List<BatchMonitored> getByTypeAndDate(BatchEvent batchEvent, Date date, Status status);
 
-    public BatchMonitored getByTypeAndDateBySuccess(BatchEvent batchEvent, Date date);
+    public List<BatchMonitored> getByTypeAndDateBySuccess(BatchEvent batchEvent, Date date);
 
-    public BatchMonitored getByTypeAndDateByFailed(BatchEvent batchEvent, Date date);
+    public List<BatchMonitored> getByTypeAndDateByFailed(BatchEvent batchEvent, Date date);
 
     public Page<BatchMonitored> get(Pageable pageable);
 
