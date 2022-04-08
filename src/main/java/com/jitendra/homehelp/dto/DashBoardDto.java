@@ -1,5 +1,6 @@
 package com.jitendra.homehelp.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jitendra.homehelp.entity.Attendance;
 import lombok.*;
 import org.springframework.data.util.Pair;
@@ -19,7 +20,9 @@ import java.util.Map;
 @Builder
 public class DashBoardDto {
     List<AttendanceDto> attendances;
+    @JsonIgnore
     Map<String, Map<String,Map<String,Integer>>> monthlyReport = new HashMap<>();
     List<Pair<String,Integer>> helpsCurrentStatus = new ArrayList<>();
+    private List<MonthlyReport> jsonMonthlyReport;
 
 }

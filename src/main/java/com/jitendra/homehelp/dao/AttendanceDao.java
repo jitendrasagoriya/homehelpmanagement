@@ -38,6 +38,8 @@ public interface AttendanceDao extends BaseDao<AttendanceRepository> {
 
     public List<AttendanceDto> getByHomeIdAndDate(String homeId, java.sql.Date requestedDate);
 
+    public List<AttendanceDto> getByHomeIdAndThisMonth(String homeId, java.sql.Date toDate, java.sql.Date fromDate);
+
     public int markInTime(Long id, Date date, Long shiftId, Time inTime);
 
     public int markOutTime(Long id,Date date, Long shiftId, Time outTime);

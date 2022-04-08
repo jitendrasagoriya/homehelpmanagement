@@ -47,6 +47,8 @@ public interface AttendanceService {
 
     public List<AttendanceDto> getByHomeIdAndDate(String homeId, java.sql.Date requestedDate);
 
+    public List<AttendanceDto> getByHomeIdAndThisMonth(String homeId );
+
     public List<AttendanceDto> getByHomeIdAndToDate(String homeId);
 
     public int markInTime(Long id, Date date, Long shiftId, Time inTime);
@@ -68,5 +70,7 @@ public interface AttendanceService {
     public Map<String, Map<String,Integer>>getMonthlyPresentAttendance(Long homeHelpId, Long shiftId, Date startDate, Date endDate );
 
     public List<Pair<String, Integer>> getCurrentHelpStatusByUserId(String userId);
+
+
 
 }

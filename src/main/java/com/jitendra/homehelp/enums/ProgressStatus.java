@@ -5,11 +5,11 @@ import java.util.Map;
 
 public enum ProgressStatus {
 
-    NOTSTARTED(101,"NOT-STARTED"),
+    NOTSTARTED(101,"NOTSTARTED"),
     INPROC(102,"INPROC"),
     COMPLETED(103,"COMPLETED"),
-    SICK(104,"SICK-LEAVE"),
-    PERSONAL(105,"PERSONAL-LEAVE");
+    SICKLEAVE(104,"SICKLEAVE"),
+    PERSONALLEAVE(105,"PERSONALLEAVE");
 
     private static final Map<Integer, ProgressStatus> byId = new HashMap<Integer, ProgressStatus>();
     private static final Map<String, ProgressStatus> byValue = new HashMap<String, ProgressStatus>();

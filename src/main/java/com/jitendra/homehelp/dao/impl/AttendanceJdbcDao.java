@@ -127,7 +127,7 @@ public class AttendanceJdbcDao implements AttendanceDao {
     @Override
     public List<AttendanceDto> getByHomeIdAndDate(String homeId, java.sql.Date requestedDate) {
         String sql = "SELECT AAT.*,S.SHIFT_TIME   FROM ( SELECT A.*,HH.NAME,HH.HELP_TYPE   FROM ATTENDANCE A INNER JOIN HOME_HELP HH ON A.HOME_HELP_ID = HH.ID " +
-                " WHERE  HH. HOME_ID =  ? AND  DATE = ?) AAT INNER JOIN SHIFT S ON S.ID = AAT.SHIFT_ID;";
+                " WHERE  HH. HOME_ID =  ? AND  DATE = ? ) AAT INNER JOIN SHIFT S ON S.ID = AAT.SHIFT_ID;";
 
         if(logger.isDebugEnabled())
             logger.debug("Sql : {}, PARAMS : homeId {} and requestedDate {} ",sql,homeId,requestedDate );
@@ -137,6 +137,42 @@ public class AttendanceJdbcDao implements AttendanceDao {
             public void setValues(PreparedStatement ps) throws SQLException {
                 ps.setString(1,homeId);
                 ps.setDate(2,requestedDate);
+            }
+        }, new RowMapper<AttendanceDto>() {
+            @Override
+            public AttendanceDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                AttendanceDto attendanceDto = new AttendanceDto();
+                attendanceDto.setId(rs.getLong("ID"));
+                attendanceDto.setDate(rs.getDate("DATE"));
+                attendanceDto.setPresent(rs.getString("PRESENT"));
+                attendanceDto.setName(rs.getString("NAME"));
+                attendanceDto.setShiftTime(rs.getTime("SHIFT_TIME"));
+                attendanceDto.setInTime(rs.getTime("IN_TIME"));
+                attendanceDto.setOutTime(rs.getTime("OUT_TIME"));
+                attendanceDto.setStatus(rs.getString("STATUS"));
+                attendanceDto.setHelpType(HelpType.getById(rs.getInt("HELP_TYPE")).getValue());
+                attendanceDto.setHomeHelpId(rs.getLong("HOME_HELP_ID"));
+                attendanceDto.setShiftId(rs.getLong("SHIFT_ID"));
+                logger.info(attendanceDto.toPipeSeparatedString());
+                return attendanceDto;
+            }
+        });
+    }
+
+    @Override
+    public List<AttendanceDto> getByHomeIdAndThisMonth(String homeId, java.sql.Date toDate, java.sql.Date fromDate) {
+        String sql = "SELECT AAT.*,S.SHIFT_TIME   FROM ( SELECT A.*,HH.NAME,HH.HELP_TYPE   FROM ATTENDANCE A INNER JOIN HOME_HELP HH ON A.HOME_HELP_ID = HH.ID " +
+                " WHERE  HH. HOME_ID =  ? AND  DATE  BETWEEN ? AND  ? ORDER BY A.DATE) AAT INNER JOIN SHIFT S ON S.ID = AAT.SHIFT_ID;";
+
+        logger.info("Sql : {}, PARAMS : homeId {} and Date Between  {} and  {} ",sql,homeId,toDate,fromDate );
+
+        return jdbcTemplate.query(sql, new PreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps) throws SQLException {
+                int i = 1;
+                ps.setString(i++,homeId);
+                ps.setDate(i++,toDate);
+                ps.setDate(i++,fromDate);
             }
         }, new RowMapper<AttendanceDto>() {
             @Override

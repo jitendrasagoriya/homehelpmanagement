@@ -2,6 +2,7 @@ package com.jitendra.homehelp.endpoint;
 
 import com.jitendra.homehelp.dto.AttendanceDto;
 import com.jitendra.homehelp.dto.DashBoardDto;
+import com.jitendra.homehelp.dto.MonthlyReport;
 import com.jitendra.homehelp.service.AttendanceService;
 import com.jitendra.homehelp.service.DashBoardService;
 import io.swagger.annotations.*;
@@ -63,6 +64,20 @@ public class AttendanceEndpoint {
         }
     }
 
+    @ApiOperation(value = "Get Monthly Attendance",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            nickname = "getMonthlyAttendance",authorizations = {
+            @Authorization(HttpHeaders.AUTHORIZATION)
+    } )
+    @GetMapping(path = {"monthly/"})
+    public ResponseEntity<?> getMonthlyAttendance(@ApiIgnore @RequestAttribute(name = "userId") String userId) {
+        try {
+            return new ResponseEntity<>(attendanceService.getByHomeIdAndThisMonth(userId), HttpStatus.OK);
+        }catch (Exception exception) {
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @ApiOperation(value = "Get Today DashBoard",
             nickname = "Get DashBoard",consumes = MediaType.TEXT_PLAIN_VALUE,authorizations = {
             @Authorization(HttpHeaders.AUTHORIZATION)
@@ -75,6 +90,7 @@ public class AttendanceEndpoint {
             dashBoardDto.setAttendances(attendanceDtos);
             Map<String,Integer> helpCurrentStatus =  dashBoardService.getHelpsCurrentStatus(attendanceDtos);
             dashBoardDto.setMonthlyReport(dashBoardService.getMonthlyReport(attendanceDtos));
+            dashBoardDto.setJsonMonthlyReport(MonthlyReport.build(dashBoardDto.getMonthlyReport()));
             dashBoardDto.setHelpsCurrentStatus(dashBoardService.getCurrentStatus(userId));
             return new ResponseEntity<>(dashBoardDto, HttpStatus.OK);
         }catch (Exception exception) {
