@@ -154,7 +154,7 @@ public class AttendanceJdbcDao implements AttendanceDao {
                 attendanceDto.setHomeHelpId(rs.getLong("HOME_HELP_ID"));
                 attendanceDto.setShiftId(rs.getLong("SHIFT_ID"));
                 logger.info(attendanceDto.toPipeSeparatedString());
-                return attendanceDto;
+                return attendanceDto;  
             }
         });
     }
