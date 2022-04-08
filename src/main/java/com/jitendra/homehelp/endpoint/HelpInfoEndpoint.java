@@ -1,11 +1,14 @@
 package com.jitendra.homehelp.endpoint;
 
+import com.jitendra.homehelp.dao.impl.AttendanceJdbcDao;
 import com.jitendra.homehelp.entity.HomeHelp;
 import com.jitendra.homehelp.entity.Shift;
 import com.jitendra.homehelp.enums.HelpType;
 import com.jitendra.homehelp.exceptions.DuplicateHomeHelpException;
 import com.jitendra.homehelp.service.HomeHelpService;
 import io.swagger.annotations.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,6 +31,8 @@ import java.util.List;
         @ApiImplicitParam(name = "X-AUTH-LOG-HEADER", value = "Add Your Access Token", paramType = "header",dataType = "string",required = true,dataTypeClass = String.class)
 })
 public class HelpInfoEndpoint {
+
+    private static final Logger logger =   LogManager.getLogger(HelpInfoEndpoint.class);
 
     @Autowired
     private HomeHelpService homeHelpService;
@@ -82,15 +87,21 @@ public class HelpInfoEndpoint {
     })
     public ResponseEntity<?> save(@RequestBody HomeHelp homeHelp, @ApiIgnore @RequestAttribute(name = "userId") String userId) {
         try {
+            logger.info("homeHelp : {}",homeHelp.toJson());
             homeHelp.setHomeId(userId);
             homeHelp.setIsActive(Boolean.TRUE);
-            if(homeHelp.getShifts()!=null)
-                homeHelp.getShifts().forEach(shift -> shift.setHomeHelp(homeHelp));
+            if(homeHelp.getShifts()!=null) {
+               // homeHelp.getShifts().forEach(shift -> shift.setHomeHelp(homeHelp));
+                for(int i=0;i<homeHelp.getShifts().size();i++) {
+                    homeHelp.getShifts().get(i).setHomeHelp(homeHelp);
+                }
+            }
             HomeHelp homeHelp1 =  homeHelpService.save(homeHelp);
             return new ResponseEntity<>(homeHelp1,HttpStatus.OK);
         } catch (DuplicateHomeHelpException duplicateHomeHelpException) {
             return new ResponseEntity<>(duplicateHomeHelpException.getMessage(),HttpStatus.BAD_REQUEST);
         }catch (Exception exception) {
+            logger.error(exception.getMessage(),exception);
             return new ResponseEntity(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

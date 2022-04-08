@@ -11,7 +11,8 @@ public enum HelpType {
     SAFAI(3,"SAFAI"),
     MALIS(4,"MALIS"),
     DRIVER(5,"DRIVER"),
-    FOOD(6,"FOOD");
+    FOOD(6,"FOOD"),
+    GUARD(7,"GUARD");
 
 
 

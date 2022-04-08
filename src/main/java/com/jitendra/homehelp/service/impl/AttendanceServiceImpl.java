@@ -6,8 +6,11 @@ import com.jitendra.homehelp.entity.Attendance;
 import com.jitendra.homehelp.enums.ProgressStatus;
 import com.jitendra.homehelp.enums.Status;
 import com.jitendra.homehelp.service.AttendanceService;
+import com.jitendra.homehelp.utils.Utils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +19,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.TemporalField;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +32,8 @@ import java.util.Map;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
+
+    private static final Logger logger =   LogManager.getLogger(AttendanceServiceImpl.class);
 
     @Autowired
     private AttendanceDao attendanceDao;
@@ -106,6 +115,16 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public List<AttendanceDto> getByHomeIdAndDate(String homeId, java.sql.Date requestedDate) {
         return attendanceDao.getByHomeIdAndDate(homeId,requestedDate);
+    }
+
+    @Override
+    public List<AttendanceDto> getByHomeIdAndThisMonth(String homeId) {
+
+        Date firstDateOfMonth =   Date.from(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant()) ;
+        Date now = new Date();
+        Date today = DateUtils.truncate(now, Calendar.DAY_OF_MONTH);
+
+        return attendanceDao.getByHomeIdAndThisMonth(homeId, new java.sql.Date(firstDateOfMonth.getTime()) , new java.sql.Date(today.getTime()));
     }
 
     @Override
